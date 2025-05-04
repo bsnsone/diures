@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DIU Student Result Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #0066cc;
+        }
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            height: 40px;
+            box-sizing: border-box;
+        }
+        select {
+            width: 200px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            height: 40px;
+            box-sizing: border-box;
+            background-color: white;
+            cursor: pointer;
+        }
+        select:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            height: 40px;
+            box-sizing: border-box;
+        }
+        button:hover {
+            background-color: #004c99;
+        }
+        .name-card {
+            background-color: #f9f9f9;
+            border: 2px solid #0066cc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .name-card p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .name-card p span {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0066cc;
+            color: white;
+            font-size: 18px;
+        }
+        .cgpa {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+        }
+        .loading {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 40px;
+            box-sizing: border-box;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        #progressBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background-color: #0066cc;
+            z-index: 0;
+            border-radius: 5px;
+            transition: width 0.1s;
+        }
+        #loadingText {
+            position: relative;
+            z-index: 1;
+            color: black;
+            text-align: center;
+            line-height: 20px;
+            margin: 0;
+        }
+        .download-btn {
+            padding: 12px 24px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>DIU Student Result Viewer</h2>
+    <div class="search-container">
+        <input type="text" id="studentIdInput" placeholder="Enter Student ID (e.g., 232-35-733)">
+        <select id="semesterSelect">
+            <option value="">Select Semester</option>
+        </select>
+        <button onclick="fetchResult()">Get Result</button>
+    </div>
+
+    <div id="loading" class="loading">
+        <div id="progressBar"></div>
+        <p id="loadingText">Loading... 0%</p>
+    </div>
+
+    <div id="resultTable"></div>
+</div>
+
+<script>
+    // Fetch and populate semester dropdown on page load
+    async function fetchSemesters() {
+        try {
+            const response = await fetch('http://peoplepulse.diu.edu.bd:8189/result/semesterList');
+            const semesters = await response.json();
+            const semesterSelect = document.getElementById('semesterSelect');
+
+            // Clear existing options except the placeholder
+            semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+
+            // Add semester options
+            semesters.forEach(semester => {
+                const option = document.createElement('option');
+                option.value = semester.semesterId;
+                option.textContent = `${semester.semesterName} ${semester.semesterYear}`;
+                semesterSelect.appendChild(option);
+            });
+        } catch (err) {
+            console.error('Failed to fetch semesters:', err);
+            document.getElementById('semesterSelect').innerHTML = '<option value="">Error loading semesters</option>';
+        }
+    }
+
+    // Call fetchSemesters on page load
+    document.addEventListener('DOMContentLoaded', fetchSemesters);
+
+    async function fetchResult() {
+        const studentId = document.getElementById('studentIdInput').value.trim();
+        const semesterId = document.getElementById('semesterSelect').value;
+        const selectedSemesterName = document.getElementById('semesterSelect').selectedOptions[0].textContent;
+
+        // Validate inputs
+        if (!studentId || !semesterId) {
+            document.getElementById('resultTable').innerHTML = '<p>Please enter a Student ID and select a Semester.</p>';
+            return;
+        }
+
+        const loadingDiv = document.getElementById('loading');
+        const progressBar = document.getElementById('progressBar');
+        const loadingText = document.getElementById('loadingText');
+        loadingDiv.style.display = 'block';
+        document.getElementById('resultTable').innerHTML = '';
+
+        let progress = 0;
+        progressBar.style.width = '0%';
+        loadingText.innerText = 'Loading... 0%';
+
+        const interval = setInterval(() => {
+            if (progress < 95) {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                loadingText.innerText = `Loading... ${progress}%`;
+            }
+        }, 200);
+
+        try {
+            // Fetch student info for name card
+            let studentInfo = { studentName: 'N/A', studentId, departmentName: 'N/A', batchNo: 'N/A' };
+            let displayBatchNo = 'N/A';
+
+            try {
+                const studentInfoUrl = `http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${encodeURIComponent(studentId)}`;
+                const studentInfoRes = await fetch(studentInfoUrl);
+                studentInfo = await studentInfoRes.json();
+
+                // Adjust batchNo for SWE department
+                displayBatchNo = studentInfo.batchNo;
+                if (studentInfo.deptShortName === 'SWE') {
+                    displayBatchNo = (parseInt(studentInfo.batchNo) - 1).toString();
+                }
+            } catch (err) {
+                console.error('Failed to fetch student info:', err);
+                // Continue with results fetch even if student info fails
+            }
+
+            // Fetch results using dropdown semesterId
+            const resultsUrl = `http://peoplepulse.diu.edu.bd:8189/result?grecaptcha=&semesterId=${encodeURIComponent(semesterId)}&studentId=${encodeURIComponent(studentId)}`;
+            const resultsRes = await fetch(resultsUrl);
+            const data = await resultsRes.json();
+
+            progress = 100;
+            progressBar.style.width = '100%';
+            loadingText.innerText = 'Loading... 100%';
+            clearInterval(interval);
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+            }, 500);
+
+            if (!data.length) {
+                document.getElementById("resultTable").innerHTML = "<p>No result found.</p>";
+                return;
+            }
+
+            let totalCredits = 0, totalPoints = 0;
+
+            const rows = data.map(d => {
+                totalCredits += d.totalCredit;
+                totalPoints += d.pointEquivalent * d.totalCredit;
+
+                return `
+                    <tr>
+                        <td>${d.customCourseId}</td>
+                        <td>${d.courseTitle}</td>
+                        <td>${d.totalCredit}</td>
+                        <td>${d.gradeLetter}</td>
+                        <td>${d.pointEquivalent}</td>
+                    </tr>`;
+            }).join('');
+
+            const cgpa = (totalPoints / totalCredits).toFixed(2);
+
+            // Render name card and results
+            document.getElementById("resultTable").innerHTML = `
+                <div class="name-card">
+                    <p><span>Student Name:</span> ${studentInfo.studentName}</p>
+                    <p><span>Student ID:</span> ${studentInfo.studentId}</p>
+                    <p><span>Semester:</span> ${selectedSemesterName}</p>
+                    <p><span>Department:</span> ${studentInfo.departmentName}</p>
+                    <p><span>Batch No:</span> ${displayBatchNo}</p>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Course Title</th>
+                            <th>Credit</th>
+                            <th>Grade</th>
+                            <th>Point</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+                <div class="cgpa">Calculated CGPA: ${cgpa}</div>
+                <button class="download-btn" onclick="downloadPDF('${studentInfo.studentId}', '${cgpa}', '${studentInfo.studentName}', '${selectedSemesterName}', '${studentInfo.departmentName}', '${displayBatchNo}')">Download PDF</button>
+            `;
+        } catch (err) {
+            console.error('Failed to fetch results:', err);
+            progress = 100;
+            progressBar.style.width = '100%';
+            loadingText.innerText = 'Loading... 100%';
+            clearInterval(interval);
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+            }, 500);
+            document.getElementById("resultTable").innerHTML = "<p>Failed to fetch results. Please try again.</p>";
+        }
+    }
+
+    function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departmentName, batchNo) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const table = document.querySelectorAll("table tbody tr");
+        const rows = [];
+
+        table.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            const rowData = Array.from(cells).map(cell => cell.textContent);
+            rows.push(rowData);
+        });
+
+        // Render "designedbyShihab733/@imransihab0" at the top
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        const x = 14;
+        const y = 10;
+
+        doc.setTextColor(0, 0, 0); // Black for "designedby"
+        const text1 = "designedby";
+        doc.text(text1, x, y);
+        const width1 = doc.getTextWidth(text1);
+
+        doc.setTextColor(255, 0, 0); // Red for "Shihab733"
+        const link1 = "Shihab733";
+        doc.textWithLink(link1, x + width1, y, { url: 'https://www.facebook.com/imranulislamshihab' });
+        const width2 = doc.getTextWidth(link1);
+
+        doc.setTextColor(0, 0, 0); // Black for "/"
+        const text2 = "/";
+        doc.text(text2, x + width1 + width2, y);
+        const width3 = doc.getTextWidth(text2);
+
+        doc.setTextColor(255, 0, 0); // Red for "@imransihab0"
+        const link2 = "@imransihab0";
+        doc.textWithLink(link2, x + width1 + width2 + width3, y, { url: 'https://github.com/imransihab0' });
+        const width4 = doc.getTextWidth(link2);
+
+        // Render name card
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        const cardX = 14;
+        const cardY = y + 15; // Below "designedbyShihab733/@imransihab0"
+        const cardWidth = 180;
+        const cardHeight = 50;
+        const lineHeight = 8;
+
+        // Draw border
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(0, 102, 204); // Blue border (#0066cc)
+        doc.rect(cardX, cardY, cardWidth, cardHeight);
+
+        // Render fields
+        const fields = [
+            { label: "Student Name:", value: studentName || 'N/A' },
+            { label: "Student ID:", value: studentId },
+            { label: "Semester:", value: selectedSemesterName || 'N/A' },
+            { label: "Department:", value: departmentName || 'N/A' },
+            { label: "Batch No:", value: batchNo || 'N/A' }
+        ];
+
+        let currentY = cardY + 8;
+        fields.forEach(field => {
+            doc.setTextColor(0, 102, 204); // Blue for label
+            doc.setFont("helvetica", "bold");
+            doc.text(field.label, cardX + 5, currentY);
+            const labelWidth = doc.getTextWidth(field.label);
+            doc.setTextColor(0, 0, 0); // Black for value
+            doc.setFont("helvetica", "normal");
+            doc.text(field.value, cardX + 5 + labelWidth + 2, currentY);
+            currentY += lineHeight;
+        });
+
+        // Reset font and size for subsequent text
+        doc.setTextColor(0, 0, 0); // Black
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+
+        // Add table
+        doc.autoTable({
+            head: [['Course Code', 'Course Title', 'Credit', 'Grade', 'Point']],
+            body: rows,
+            startY: cardY + cardHeight + 10,
+            margin: { top: 10 }
+        });
+
+        // Add "Calculated CGPA" with value in red and bold
+        const finalY = doc.lastAutoTable.finalY || cardY + cardHeight + 10;
+        const cgpaLabel = "Calculated CGPA: ";
+        doc.setTextColor(0, 0, 0); // Black for label
+        doc.setFont("helvetica", "normal");
+        doc.text(cgpaLabel, 14, finalY + 10);
+        const labelWidth = doc.getTextWidth(cgpaLabel);
+        doc.setTextColor(255, 0, 0); // Red for CGPA value
+        doc.setFont("helvetica", "bold");
+        doc.text(`${cgpa}`, 14 + labelWidth, finalY + 10);
+        doc.setFont("helvetica", "normal"); // Reset font
+
+        // Save PDF
+        doc.save(`${studentId}_result.pdf`);
+    }
+</script>
+</body>
+</html>

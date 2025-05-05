@@ -5,6 +5,7 @@ body {
     padding: 20px;
     color: #333;
 }
+
 .container {
     max-width: 800px;
     margin: auto;
@@ -13,10 +14,12 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
+
 h2 {
     text-align: center;
     color: #0066cc;
 }
+
 .search-container {
     display: flex;
     justify-content: space-between;
@@ -24,7 +27,8 @@ h2 {
     margin-bottom: 20px;
     gap: 10px;
 }
-input[type="text"], select {
+
+input[type="text"] {
     flex: 1;
     padding: 10px;
     border: 2px solid #ddd;
@@ -33,15 +37,24 @@ input[type="text"], select {
     height: 40px;
     box-sizing: border-box;
 }
+
 select {
     width: 200px;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 40px;
+    box-sizing: border-box;
     background-color: white;
     cursor: pointer;
 }
+
 select:focus {
     outline: none;
     border-color: #0066cc;
 }
+
 button {
     padding: 10px 20px;
     background-color: #0066cc;
@@ -50,10 +63,14 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    height: 40px;
+    box-sizing: border-box;
 }
+
 button:hover {
     background-color: #004c99;
 }
+
 .name-card {
     background-color: #f9f9f9;
     border: 2px solid #0066cc;
@@ -61,68 +78,90 @@ button:hover {
     padding: 15px;
     margin-bottom: 20px;
 }
+
 .name-card p {
     margin: 5px 0;
+    font-size: 16px;
 }
-.name-card span {
+
+.name-card p span {
     font-weight: bold;
     color: #0066cc;
 }
+
 table {
     width: 100%;
-    border-collapse: collapse;
     margin-top: 20px;
+    border-collapse: collapse;
 }
+
 th, td {
     padding: 12px;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
+
 th {
     background-color: #0066cc;
     color: white;
+    font-size: 18px;
 }
+
 .cgpa {
     margin-top: 20px;
-    text-align: right;
-    font-size: 18px;
     font-weight: bold;
+    font-size: 18px;
+    text-align: right;
 }
+
 .loading {
     display: none;
     position: relative;
+    width: 100%;
     height: 40px;
-    margin-top: 20px;
-    background: white;
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: white;
     border-radius: 5px;
+    margin-top: 20px;
     overflow: hidden;
 }
+
 #progressBar {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
-    width: 0%;
+    width: 0;
     background-color: #0066cc;
+    z-index: 0;
+    border-radius: 5px;
     transition: width 0.1s;
 }
+
 #loadingText {
     position: relative;
     z-index: 1;
+    color: black;
     text-align: center;
-    line-height: 40px;
+    line-height: 20px;
+    margin: 0;
 }
+
 .download-btn {
+    padding: 12px 24px;
     background-color: #28a745;
     color: white;
     border: none;
     border-radius: 5px;
-    font-size: 18px;
-    padding: 12px 24px;
-    margin-top: 20px;
     cursor: pointer;
+    font-size: 18px;
+    margin-top: 20px;
+    display: block;
     width: 100%;
+    text-align: center;
 }
+
 .download-btn:hover {
     background-color: #218838;
 }

@@ -46,8 +46,10 @@ async function fetchResult() {
     loadingText.innerText = 'Loading... 0%';
 
     const interval = setInterval(() => {
-        if (progress < 95) {
-            progress += 5;
+        if (progress < 99) {
+            const increment = Math.floor(Math.random() * 6) + 1; // Random number between 1 and 6
+            progress += increment;
+            if (progress > 99) progress = 99; // Ensure progress doesn't exceed 99
             progressBar.style.width = `${progress}%`;
             loadingText.innerText = `Loading... ${progress}%`;
         }

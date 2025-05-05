@@ -179,7 +179,7 @@
     // Fetch and populate semester dropdown on page load
     async function fetchSemesters() {
         try {
-            const response = await fetch('http://peoplepulse.diu.edu.bd:8189/result/semesterList');
+            const response = await fetch('/api/proxy?path=result/semesterList');
             const semesters = await response.json();
             const semesterSelect = document.getElementById('semesterSelect');
 
@@ -237,7 +237,7 @@
             let displayBatchNo = 'N/A';
 
             try {
-                const studentInfoUrl = `http://peoplepulse.diu.edu.bd:8189/result/studentInfo?studentId=${encodeURIComponent(studentId)}`;
+                const studentInfoUrl = `/api/proxy?path=result/studentInfo&studentId=${encodeURIComponent(studentId)}`;
                 const studentInfoRes = await fetch(studentInfoUrl);
                 studentInfo = await studentInfoRes.json();
 
@@ -252,7 +252,7 @@
             }
 
             // Fetch results using dropdown semesterId
-            const resultsUrl = `http://peoplepulse.diu.edu.bd:8189/result?grecaptcha=&semesterId=${encodeURIComponent(semesterId)}&studentId=${encodeURIComponent(studentId)}`;
+            const resultsUrl = `/api/proxy?path=result&grecaptcha=&semesterId=${encodeURIComponent(semesterId)}&studentId=${encodeURIComponent(studentId)}`;
             const resultsRes = await fetch(resultsUrl);
             const data = await resultsRes.json();
 

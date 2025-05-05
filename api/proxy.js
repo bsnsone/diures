@@ -1,18 +1,26 @@
-const fetch = require('node-fetch');
+export default async function handler(req, res) {
+    const { path, ...query } = req.query;
 
-module.exports = async (req, res) => {
-    const { path } = req.query;
-    const apiUrl = `http://peoplepulse.diu.edu.bd:8189${path}`;
-    try {
-        const response = await fetch(apiUrl, {
-            method: req.method,
-            headers: { 'Content-Type': 'application/json' },
-            body: req.method !== 'GET' ? JSON.stringify(req.body) : null
-        });
-        const data = await response.json();
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(response.status).json(data);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch API', details: error.message });
+    if (!path) {
+        return res.status(400).json({ error: 'Missing "path" query parameter.' });
     }
-};
+
+    const baseUrl = 'http://peoplepulse.diu.edu.bd:8189/';
+    const url = baseUrl + path + '?' + new URLSearchParams(query).toString();
+
+    try {
+        const response = await fetch(url);
+        const contentType = response.headers.get('content-type');
+
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            res.status(200).json(data);
+        } else {
+            const text = await response.text();
+            res.status(200).send(text);
+        }
+    } catch (err) {
+        console.error('Proxy error:', err);
+        res.status(500).json({ error: 'Failed to fetch data from DIU API.' });
+    }
+}

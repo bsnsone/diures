@@ -1,0 +1,128 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f3f4f6;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+h2 {
+    text-align: center;
+    color: #0066cc;
+}
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+input[type="text"], select {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 40px;
+    box-sizing: border-box;
+}
+select {
+    width: 200px;
+    background-color: white;
+    cursor: pointer;
+}
+select:focus {
+    outline: none;
+    border-color: #0066cc;
+}
+button {
+    padding: 10px 20px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover {
+    background-color: #004c99;
+}
+.name-card {
+    background-color: #f9f9f9;
+    border: 2px solid #0066cc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.name-card p {
+    margin: 5px 0;
+}
+.name-card span {
+    font-weight: bold;
+    color: #0066cc;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #0066cc;
+    color: white;
+}
+.cgpa {
+    margin-top: 20px;
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+}
+.loading {
+    display: none;
+    position: relative;
+    height: 40px;
+    margin-top: 20px;
+    background: white;
+    border-radius: 5px;
+    overflow: hidden;
+}
+#progressBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: #0066cc;
+    transition: width 0.1s;
+}
+#loadingText {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    line-height: 40px;
+}
+.download-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 12px 24px;
+    margin-top: 20px;
+    cursor: pointer;
+    width: 100%;
+}
+.download-btn:hover {
+    background-color: #218838;
+}

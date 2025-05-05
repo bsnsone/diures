@@ -1,4 +1,5 @@
 let progressInterval;
+
 function startLoading() {
     const progressBar = document.getElementById("progressBar");
     const loadingText = document.getElementById("loadingText");
@@ -8,8 +9,11 @@ function startLoading() {
     loadingText.innerText = "Loading... 0%";
 
     progressInterval = setInterval(() => {
-        if (progress < 95) {
-            progress += 5;
+        if (progress < 99) {
+            // Random increment between 1 and 6
+            const increment = Math.floor(Math.random() * 6) + 1;
+            progress += increment;
+            progress = Math.min(progress, 99); // Ensure progress doesn't exceed 99%
             progressBar.style.width = `${progress}%`;
             loadingText.innerText = `Loading... ${progress}%`;
         }

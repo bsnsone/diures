@@ -6,16 +6,21 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- jsPDF and AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h2>DIU Student Result Viewer</h2>
+
         <div class="search-container">
             <input type="text" id="studentIdInput" placeholder="Enter Student ID (e.g., 232-35-733)" />
             <select id="semesterSelect">
                 <option value="">Select Semester</option>
             </select>
-            <button>Search</button>
+            <button id="searchBtn">Search</button>
         </div>
 
         <div class="loading" id="loading">
@@ -24,16 +29,18 @@
         </div>
 
         <div id="resultTable"></div>
+
+        <!-- Hidden initially; shown when result is available -->
         <button id="downloadPdfBtn" style="display: none;">Download PDF</button>
     </div>
 
-    <!-- Modular JS Scripts -->
+    <!-- Modular JavaScript Files -->
     <script type="module" src="js/eventBindings.js"></script>
     <script src="js/fetchResult.js"></script>
     <script src="js/cgpaCalculator.js"></script>
     <script src="js/renderNameCard.js"></script>
     <script src="js/renderTable.js"></script>
     <script src="js/loadingUI.js"></script>
-    <script src="js/downloadPDF.js"></script>
+    <script type="module" src="js/downloadPDF.js"></script>
 </body>
 </html>

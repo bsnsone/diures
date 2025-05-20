@@ -54,8 +54,8 @@ h2 {
     margin-bottom: 1rem;
     font-weight: 700;
     background: linear-gradient(90deg, 
-        #ff0000, #ff7f00, #ffff00, 
-        #00ff00, #0000ff, #4b0082, 
+        #ff0000, #ff7f00, #ff00ff, 
+        #00b93e, #0000ff, #4b0082, 
         #9400d3, #ff0000
     );
     background-size: 200% auto;

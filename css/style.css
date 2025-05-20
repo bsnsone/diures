@@ -37,16 +37,6 @@ body {
     overflow: hidden;
 }
 
-.container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
-}
-
 .container:hover {
     transform: translateY(-5px);
 }

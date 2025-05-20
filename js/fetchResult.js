@@ -108,7 +108,7 @@ async function fetchResult() {
                     ${rows}
                 </tbody>
             </table>
-            <div class="cgpa">Calculated CGPA: ${cgpa}</div>
+            <div class="cgpa">Calculated CGPA: <span>${cgpa}</span></div>
             <button class="download-btn" onclick="downloadPDF('${studentInfo.studentId}', '${cgpa}', '${studentInfo.studentName}', '${selectedSemesterName}', '${studentInfo.departmentName}', '${displayBatchNo}')">Download PDF</button>
         `;
     } catch (err) {

@@ -230,7 +230,7 @@ table {
 }
 
 th, td {
-    padding: 1rem;
+    padding: 0.6rem;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
 }

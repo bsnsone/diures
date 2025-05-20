@@ -75,8 +75,8 @@ async function fetchResult() {
 
             return `
                 <tr>
-                    <td>${d.customCourseId}</td>
                     <td>${d.courseTitle}</td>
+                    <td>${d.customCourseId}</td>
                     <td>${d.totalCredit}</td>
                     <td>${d.gradeLetter}</td>
                     <td>${d.pointEquivalent}</td>
@@ -97,8 +97,8 @@ async function fetchResult() {
             <table>
                 <thead>
                     <tr>
-                        <th>Course Code</th>
                         <th>Course Title</th>
+                        <th>Course Code</th>
                         <th>Credit</th>
                         <th>Grade</th>
                         <th>Point</th>

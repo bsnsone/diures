@@ -522,6 +522,8 @@ select option[value=""] {
         background: var(--card-background);
         z-index: 1;
         border-right: 1px solid var(--border-color);
+        max-width: 60%;
+        width: 60%;
     }
 
     th:first-child {
@@ -532,6 +534,8 @@ select option[value=""] {
     td:first-child {
         background: var(--card-background);
         color: var(--text-primary);
+        white-space: normal;
+        word-wrap: break-word;
     }
 
     .cgpa {
@@ -618,6 +622,8 @@ select option[value=""] {
         left: 0;
         z-index: 1;
         border-right: 1px solid var(--border-color);
+        max-width: 60%;
+        width: 60%;
     }
 
     th:first-child {
@@ -628,6 +634,8 @@ select option[value=""] {
     td:first-child {
         background: var(--card-background);
         color: var(--text-primary);
+        white-space: normal;
+        word-wrap: break-word;
     }
 
     .cgpa {

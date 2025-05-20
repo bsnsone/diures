@@ -526,6 +526,24 @@ select option[value=""] {
         white-space: nowrap;
     }
 
+    th:first-child, td:first-child {
+        position: sticky;
+        left: 0;
+        background: var(--card-background);
+        z-index: 1;
+        border-right: 1px solid var(--border-color);
+    }
+
+    th:first-child {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+    }
+
+    td:first-child {
+        background: var(--card-background);
+        color: var(--text-primary);
+    }
+
     .cgpa {
         font-size: 1rem;
         padding: 0.6rem 1rem;
@@ -608,8 +626,18 @@ select option[value=""] {
     th:first-child, td:first-child {
         position: sticky;
         left: 0;
-        background: var(--card-background);
         z-index: 1;
+        border-right: 1px solid var(--border-color);
+    }
+
+    th:first-child {
+        background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+    }
+
+    td:first-child {
+        background: var(--card-background);
+        color: var(--text-primary);
     }
 
     .cgpa {

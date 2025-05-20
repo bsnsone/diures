@@ -508,7 +508,8 @@ select option[value=""] {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         width: 100%;
-        max-width: 100%;
+        margin: 1rem 0;
+        padding: 0;
     }
 
     th, td {
@@ -608,8 +609,9 @@ select option[value=""] {
 
     table {
         font-size: 0.8rem;
-        margin: 1rem -0.75rem;
-        width: calc(100% + 1.5rem);
+        width: 100%;
+        margin: 1rem 0;
+        padding: 0;
     }
 
     th, td {
@@ -620,6 +622,7 @@ select option[value=""] {
     th:first-child, td:first-child {
         position: sticky;
         left: 0;
+        background: var(--card-background);
         z-index: 1;
         border-right: 1px solid var(--border-color);
         max-width: 60%;

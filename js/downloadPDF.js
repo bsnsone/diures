@@ -2,100 +2,155 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Set up colors
+    const colors = {
+        primary: [99, 102, 241],    // Indigo
+        secondary: [139, 92, 246],  // Purple
+        text: [30, 41, 59],         // Slate 800
+        lightText: [100, 116, 139], // Slate 500
+        border: [226, 232, 240],    // Slate 200
+        background: [248, 250, 252] // Slate 50
+    };
+
+    // Add header with gradient background
+    doc.setFillColor(...colors.primary);
+    doc.rect(0, 0, 210, 20, 'F');
+    
+    // Add DIU logo or text
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.text("DIU Result", 105, 12, { align: "center" });
+
+    // Add student info card with modern design
+    const cardX = 14;
+    const cardY = 50;
+    const cardWidth = 180;
+    const cardHeight = 60;
+
+    // Card background with gradient
+    doc.setFillColor(...colors.background);
+    doc.roundedRect(cardX, cardY, cardWidth, cardHeight, 3, 3, 'F');
+    
+    // Card border
+    doc.setDrawColor(...colors.border);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(cardX, cardY, cardWidth, cardHeight, 3, 3);
+
+    // Card header
+    doc.setFillColor(...colors.primary);
+    doc.roundedRect(cardX, cardY, cardWidth, 10, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Student Information", cardX + 5, cardY + 7);
+
+    // Student details
+    const fields = [
+        { label: "Student Name", value: studentName || 'N/A' },
+        { label: "Student ID", value: studentId },
+        { label: "Semester", value: selectedSemesterName || 'N/A' },
+        { label: "Department", value: departmentName || 'N/A' },
+        { label: "Batch No", value: batchNo || 'N/A' }
+    ];
+
+    let currentY = cardY + 20;
+    fields.forEach(field => {
+        // Label
+        doc.setTextColor(...colors.lightText);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(field.label + ":", cardX + 5, currentY);
+        
+        // Value
+        doc.setTextColor(...colors.text);
+        doc.setFont("helvetica", "bold");
+        doc.text(field.value, cardX + 45, currentY);
+        
+        currentY += 8;
+    });
+
+    // Get table data
     const table = document.querySelectorAll("table tbody tr");
     const rows = [];
-
     table.forEach(row => {
         const cells = row.querySelectorAll("td");
         const rowData = Array.from(cells).map(cell => cell.textContent);
         rows.push(rowData);
     });
 
-    // Render "designedbyShihab733/@imransihab0" at the top
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    const x = 14;
-    const y = 10;
-
-    doc.setTextColor(0, 0, 0); // Black for "designedby"
-    const text1 = "designedby";
-    doc.text(text1, x, y);
-    const width1 = doc.getTextWidth(text1);
-
-    doc.setTextColor(255, 0, 0); // Red for "Shihab733"
-    const link1 = "Shihab733";
-    doc.textWithLink(link1, x + width1, y, { url: 'https://www.facebook.com/imranulislamshihab' });
-    const width2 = doc.getTextWidth(link1);
-
-    doc.setTextColor(0, 0, 0); // Black for "/"
-    const text2 = "/";
-    doc.text(text2, x + width1 + width2, y);
-    const width3 = doc.getTextWidth(text2);
-
-    doc.setTextColor(255, 0, 0); // Red for "@imransihab0"
-    const link2 = "@imransihab0";
-    doc.textWithLink(link2, x + width1 + width2 + width3, y, { url: 'https://github.com/imransihab0' });
-    const width4 = doc.getTextWidth(link2);
-
-    // Render name card
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    const cardX = 14;
-    const cardY = y + 15; // Below "designedbyShihab733/@imransihab0"
-    const cardWidth = 180;
-    const cardHeight = 50;
-    const lineHeight = 8;
-
-    // Draw border
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(0, 102, 204); // Blue border (#0066cc)
-    doc.rect(cardX, cardY, cardWidth, cardHeight);
-
-    // Render fields
-    const fields = [
-        { label: "Student Name:", value: studentName || 'N/A' },
-        { label: "Student ID:", value: studentId },
-        { label: "Semester:", value: selectedSemesterName || 'N/A' },
-        { label: "Department:", value: departmentName || 'N/A' },
-        { label: "Batch No:", value: batchNo || 'N/A' }
-    ];
-
-    let currentY = cardY + 8;
-    fields.forEach(field => {
-        doc.setTextColor(0, 102, 204); // Blue for label
-        doc.setFont("helvetica", "bold");
-        doc.text(field.label, cardX + 5, currentY);
-        const labelWidth = doc.getTextWidth(field.label);
-        doc.setTextColor(0, 0, 0); // Black for value
-        doc.setFont("helvetica", "normal");
-        doc.text(field.value, cardX + 5 + labelWidth + 2, currentY);
-        currentY += lineHeight;
-    });
-
-    // Reset font and size for subsequent text
-    doc.setTextColor(0, 0, 0); // Black
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-
-    // Add table
+    // Add results table with modern styling
     doc.autoTable({
-        head: [['Course Code', 'Course Title', 'Credit', 'Grade', 'Point']],
+        head: [['Course Code', 'Course Title', 'Credit ', 'Grade ', 'Point']],
         body: rows,
-        startY: cardY + cardHeight + 10,
-        margin: { top: 10 }
+        startY: cardY + cardHeight + 20,
+        margin: { top: 10 },
+        styles: {
+            font: "helvetica",
+            fontSize: 10,
+            cellPadding: 5,
+            lineColor: colors.border,
+            lineWidth: 0.1,
+            textColor: colors.text,
+            overflow: 'linebreak'
+        },
+        headStyles: {
+            fillColor: colors.primary,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center',
+            fontSize: 11
+        },
+        alternateRowStyles: {
+            fillColor: colors.background
+        },
+        columnStyles: {
+            0: { cellWidth: 30, halign: 'center' },
+            1: { cellWidth: 'auto', halign: 'left' },
+            2: { cellWidth: 25, halign: 'center' },
+            3: { cellWidth: 25, halign: 'center' },
+            4: { cellWidth: 20, halign: 'center' }
+        },
+        theme: 'grid'
     });
 
-    // Add "Calculated CGPA" with value in red and bold
-    const finalY = doc.lastAutoTable.finalY || cardY + cardHeight + 10;
-    const cgpaLabel = "Calculated CGPA: ";
-    doc.setTextColor(0, 0, 0); // Black for label
-    doc.setFont("helvetica", "normal");
-    doc.text(cgpaLabel, 14, finalY + 10);
-    const labelWidth = doc.getTextWidth(cgpaLabel);
-    doc.setTextColor(255, 0, 0); // Red for CGPA value
+    // Add CGPA section with modern design
+    const finalY = doc.lastAutoTable.finalY + 15;
+    
+    // CGPA background
+    doc.setFillColor(...colors.background);
+    doc.roundedRect(14, finalY, 180, 15, 3, 3, 'F');
+    
+    // CGPA border
+    doc.setDrawColor(...colors.border);
+    doc.roundedRect(14, finalY, 180, 15, 3, 3);
+
+    // CGPA text
+    doc.setTextColor(...colors.text);
     doc.setFont("helvetica", "bold");
-    doc.text(`${cgpa}`, 14 + labelWidth, finalY + 10);
-    doc.setFont("helvetica", "normal"); // Reset font
+    doc.setFontSize(12);
+    doc.text("Calculated CGPA:", 20, finalY + 10);
+    
+    // CGPA value with gradient color
+    doc.setTextColor(...colors.primary);
+    doc.text(cgpa, 60, finalY + 10);
+
+    // Add footer with credits
+    const footerY = 280;
+    doc.setFontSize(8);
+    doc.setTextColor(...colors.lightText);
+    doc.setFont("helvetica", "normal");
+    
+    // Footer text with links
+    const footerText = "Designed by Shihab733 / @imransihab0";
+    doc.text(footerText, 105, footerY, { align: "center" });
+    
+    // Add clickable links
+    doc.setTextColor(...colors.primary);
+    doc.textWithLink("Shihab733", 105 - doc.getTextWidth(footerText)/2 + doc.getTextWidth("Designed by "), footerY, 
+        { url: 'https://www.facebook.com/imranulislamshihab' });
+    doc.textWithLink("@imransihab0", 105 - doc.getTextWidth(footerText)/2 + doc.getTextWidth("Designed by Shihab733 / "), footerY, 
+        { url: 'https://github.com/imransihab0' });
 
     // Save PDF
     doc.save(`${studentId}_result.pdf`);

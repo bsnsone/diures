@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIU Student Result Viewer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="https://imransihab0.github.io/amar_ami/is.png" type="image/png" sizes="32x32">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,13 +12,49 @@
 </head>
 <body>
 <div class="container">
-    <h2>DIU Student Result Viewer</h2>
+    <header>
+        <h2>DIU Student Result Viewer</h2>
+        <p class="subtitle">View and download your semester results</p>
+    </header>
+
     <div class="search-container">
-        <input type="text" id="studentIdInput" placeholder="Enter Student ID (e.g., 232-35-733)">
-        <select id="semesterSelect">
-            <option value="">Select Semester</option>
-        </select>
-        <button onclick="fetchResult()">Get Result</button>
+        <div class="search-header">
+            <h3>Search Your Result</h3>
+            <p>Enter your student ID and select semester to view your results</p>
+        </div>
+        <div class="search-form">
+            <div class="input-group">
+                <label for="studentIdInput">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Student ID
+                </label>
+                <input type="text" id="studentIdInput" placeholder="Enter Student ID (e.g., 232-35-733)">
+            </div>
+            <div class="input-group">
+                <label for="semesterSelect">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Semester
+                </label>
+                <select id="semesterSelect">
+                    <option value="">Select Semester</option>
+                </select>
+            </div>
+            <button class="search-button" onclick="fetchResult()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Get Result
+            </button>
+        </div>
     </div>
 
     <div id="loading" class="loading">

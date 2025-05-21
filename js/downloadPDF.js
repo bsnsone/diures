@@ -24,7 +24,7 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
 
     // Add student info card with modern design
     const cardX = 14;
-    const cardY = 50;
+    const cardY = 30;
     const cardWidth = 180;
     const cardHeight = 60;
 
@@ -83,8 +83,8 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
     doc.autoTable({
         head: [['Course Code', 'Course Title', 'Credit ', 'Grade ', 'Point']],
         body: rows,
-        startY: cardY + cardHeight + 20,
-        margin: { top: 10 },
+        startY: cardY + cardHeight + 10,
+        margin: { top: 5 },
         styles: {
             font: "helvetica",
             fontSize: 10,
@@ -115,7 +115,7 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
     });
 
     // Add CGPA section with modern design
-    const finalY = doc.lastAutoTable.finalY + 15;
+    const finalY = doc.lastAutoTable.finalY + 10;
     
     // CGPA background
     doc.setFillColor(...colors.background);
@@ -135,8 +135,8 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
     doc.setTextColor(...colors.primary);
     doc.text(cgpa, 60, finalY + 10);
 
-    // Add footer with credits
-    const footerY = 280;
+    // Add footer with credits - positioned after CGPA section
+    const footerY = finalY + 35;
     doc.setFontSize(8);
     doc.setTextColor(...colors.lightText);
     doc.setFont("helvetica", "normal");

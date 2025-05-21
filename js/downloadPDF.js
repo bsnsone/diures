@@ -30,16 +30,16 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
 
     // Card background with gradient
     doc.setFillColor(...colors.background);
-    doc.roundedRect(cardX, cardY, cardWidth, cardHeight, 3, 3, 'F');
+    doc.rect(cardX, cardY, cardWidth, cardHeight, 'F');
     
     // Card border
     doc.setDrawColor(...colors.border);
     doc.setLineWidth(0.5);
-    doc.roundedRect(cardX, cardY, cardWidth, cardHeight, 3, 3);
+    doc.rect(cardX, cardY, cardWidth, cardHeight);
 
     // Card header
     doc.setFillColor(...colors.primary);
-    doc.roundedRect(cardX, cardY, cardWidth, 10, 3, 3, 'F');
+    doc.rect(cardX, cardY, cardWidth, 10, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -75,43 +75,47 @@ function downloadPDF(studentId, cgpa, studentName, selectedSemesterName, departm
     const rows = [];
     table.forEach(row => {
         const cells = row.querySelectorAll("td");
-        const rowData = Array.from(cells).map(cell => cell.textContent);
-        rows.push(rowData);
+        if (cells.length >= 5) {  // Ensure we have all required columns
+            // Get the text content and replace newlines with spaces
+            const getCleanText = (cell) => {
+                return cell.textContent.replace(/\n/g, ' ').trim();
+            };
+
+            const rowData = [
+                getCleanText(cells[1]),  // Course Code (was cells[0])
+                getCleanText(cells[0]),  // Course Title (was cells[1])
+                getCleanText(cells[2]),  // Credit
+                getCleanText(cells[3]),  // Grade
+                getCleanText(cells[4])   // Point
+            ];
+            rows.push(rowData);
+        }
     });
 
-    // Add results table with modern styling
+    // Add results table with basic styling
     doc.autoTable({
-        head: [['Course Code', 'Course Title', 'Credit ', 'Grade ', 'Point']],
+        head: [['Course Code', 'Course Title', 'Credit', 'Grade', 'Point']],
         body: rows,
         startY: cardY + cardHeight + 10,
         margin: { top: 5 },
         styles: {
-            font: "helvetica",
             fontSize: 10,
-            cellPadding: 5,
-            lineColor: colors.border,
-            lineWidth: 0.1,
-            textColor: colors.text,
-            overflow: 'linebreak'
+            cellPadding: 3,
+            overflow: 'linebreak',
+            cellWidth: 'wrap'
         },
         headStyles: {
             fillColor: colors.primary,
             textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            halign: 'center',
-            fontSize: 11
-        },
-        alternateRowStyles: {
-            fillColor: colors.background
+            fontStyle: 'bold'
         },
         columnStyles: {
-            0: { cellWidth: 30, halign: 'center' },
-            1: { cellWidth: 'auto', halign: 'left' },
-            2: { cellWidth: 25, halign: 'center' },
-            3: { cellWidth: 25, halign: 'center' },
-            4: { cellWidth: 20, halign: 'center' }
-        },
-        theme: 'grid'
+            0: { cellWidth: 30 },
+            1: { cellWidth: 'auto' },
+            2: { cellWidth: 25 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 20 }
+        }
     });
 
     // Add CGPA section with modern design

@@ -1,52 +1,58 @@
-// api/mega_upload.js
-
-import { IncomingForm } from "formidable";
-import fs from "fs";
-import { file } from "megajs";
-import mega from "megajs";
-import creds from "./lib/mega_env";
-
-export const config = {
-  api: {
-    bodyParser: false, // Required for file uploads
-  },
-};
+import { Storage } from 'megajs';
+import { MEGA_CONFIG } from './lib/mega_env.js';
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Only POST allowed' });
   }
 
-  const form = new IncomingForm();
+  try {
+    // 1. Init Mega session
+    const storage = new Storage({
+      email: MEGA_CONFIG.email,
+      password: MEGA_CONFIG.password
+    });
 
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      return res.status(500).json({ error: "Error parsing form data" });
-    }
+    storage.on('ready', async () => {
+      console.log('✅ Logged into Mega');
 
-    const { filepath, originalFilename } = files.file; // Expecting 'file' field
-    try {
-      // Login to Mega
-      const storage = await new mega.Storage({
-        email: creds.email,
-        password: creds.password,
-      }).ready;
-
-      // Ensure folder exists
-      let folder = storage.root.children.find(c => c.name === creds.folderName);
+      // 2. Ensure "test_api" folder exists
+      let folder = storage.root.children.find(c => c.name === 'test_api');
       if (!folder) {
-        folder = await storage.mkdir(creds.folderName);
+        folder = await new Promise((resolve, reject) => {
+          storage.mkdir({ name: 'test_api' }, (err, f) => {
+            if (err) reject(err);
+            else resolve(f);
+          });
+        });
       }
 
-      // Upload file
-      const uploadStream = folder.upload({ name: originalFilename });
-      fs.createReadStream(filepath).pipe(uploadStream);
+      // 3. File buffer from request (frontend must send raw body or base64)
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      const fileBuffer = Buffer.concat(chunks);
 
-      uploadStream.complete(async () => {
-        res.status(200).json({ message: "Upload successful", file: originalFilename });
+      const fileName = req.headers['x-filename'] || 'uploaded_file';
+
+      // 4. Upload into Mega
+      const uploaded = folder.upload(fileName, fileBuffer);
+
+      uploaded.on('complete', file => {
+        console.log('📤 File uploaded:', file.name);
+        file.link((err, url) => {
+          if (err) return res.status(500).json({ error: err.message });
+          res.status(200).json({
+            success: true,
+            file: file.name,
+            size: file.size,
+            url
+          });
+        });
       });
-    } catch (uploadError) {
-      res.status(500).json({ error: "Upload failed", details: uploadError.message });
-    }
-  });
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 }

@@ -21,33 +21,44 @@ export default async function handler(req, res) {
       }
 
       // ------------------ POST: Upload file ------------------
-      if (req.method === 'POST') {
-        try {
-          const chunks = [];
-          for await (const chunk of req) chunks.push(chunk);
-          const fileBuffer = Buffer.concat(chunks);
+      // ------------------ POST: Upload file ------------------
+if (req.method === 'POST') {
+  try {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const fileBuffer = Buffer.concat(chunks);
 
-          const fileName = req.headers['x-filename'] || 'uploaded_file';
+    const fileName = req.headers['x-filename'] || 'uploaded_file';
 
-          const uploaded = folder.upload(fileName, fileBuffer);
+    // ======== SIZE LIMIT CHECK ========
+    const MAX_SIZE = 7 * 1024 * 1024; // 7MB in bytes
+    if (fileBuffer.length > MAX_SIZE) {
+      return res.status(400).json({
+        success: false,
+        error: `File too large. Maximum allowed size is 7MB.`
+      });
+    }
 
-          uploaded.on('complete', file => {
-            console.log('📤 Uploaded:', file.name);
-            file.link((err, url) => {
-              if (err) return res.status(500).json({ error: err.message });
-              res.status(200).json({
-                success: true,
-                file: file.name,
-                size: file.size,
-                url
-              });
-            });
-          });
-        } catch (err) {
-          console.error(err);
-          res.status(500).json({ error: err.message });
-        }
-      }
+    const uploaded = folder.upload(fileName, fileBuffer);
+
+    uploaded.on('complete', file => {
+      console.log('📤 Uploaded:', file.name);
+      file.link((err, url) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(200).json({
+          success: true,
+          file: file.name,
+          size: file.size,
+          url
+        });
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+}
+
 
       // ------------------ GET: List files with download links ------------------
       else if (req.method === 'GET') {

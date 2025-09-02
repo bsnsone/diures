@@ -1,9 +1,6 @@
 // api/lib/mega_env.js
 
-const megaCredentials = {
+export const MEGA_CONFIG = {
   email: "ggiftcardone@gmail.com",
-  password: "Shihab@Imran",
-  folderName: "test_api"
+  password: "Shihab@Imran"
 };
-
-module.exports = megaCredentials;
